@@ -1,0 +1,53 @@
+{
+    "currency": "EUR",
+    "total": 0,
+    "expenses": [],
+    "title": "A new Title qzdqzd",
+    "description": "",
+    "participants": {
+        "Firmin": {
+            "balance": 0,
+            "credit": 0,
+            "debit": 0,
+            "debtors": {},
+            "creditors": {},
+            "_id": "6116d054012b4212476ce608"
+        },
+        "André": {
+            "balance": 0,
+            "credit": 0,
+            "debit": 0,
+            "debtors": {},
+            "creditors": {},
+            "_id": "6116d054012b4212476ce609"
+        },
+        "Elisabeth": {
+            "balance": 0,
+            "credit": 0,
+            "debit": 0,
+            "debtors": {},
+            "creditors": {},
+            "_id": "6116d054012b4212476ce60a"
+        },
+        "Eric": {
+            "balance": 0,
+            "credit": 0,
+            "debit": 0,
+            "debtors": {},
+            "creditors": {},
+            "_id": "6117d8eecd584a2a96714788"
+        },
+        "alex,firmin": {
+            "balance": 0,
+            "credit": 0,
+            "debit": 0,
+            "debtors": {},
+            "creditors": {},
+            "_id": "6117d8c594fe7629777b84f3"
+        }
+    },
+    "createdAt": "2021-08-13T20:04:36.581Z",
+    "updatedAt": "2021-08-14T14:53:34.517Z",
+    "__v": 0,
+    "id": "6116d054012b4212476ce607"
+}

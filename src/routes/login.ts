@@ -1,0 +1,61 @@
+import { FastifyPluginAsync } from "fastify";
+import { RouteGenericInterface } from "fastify/types/route";
+import { Static, Type } from "@sinclair/typebox";
+import { User } from "../schemas/user";
+import { mapTempUserToSavedOne } from "../helpers/mapTempUserToSavedOne";
+
+const LoginBodyJson = Type.Object({
+  phoneNumber: Type.String(),
+});
+
+type LoginBody = Static<typeof LoginBodyJson>;
+
+interface LoginRequest extends RouteGenericInterface {
+  Body: LoginBody;
+}
+
+const login: FastifyPluginAsync = async (fastify): Promise<void> => {
+  fastify.post<LoginRequest>("/login", {
+    schema: {
+      body: LoginBodyJson,
+    },
+    preValidation: fastify.getUserInfoIfLogged,
+    handler: async (req, rep) => {
+      const {
+        user: { id: currentUserId },
+      } = req;
+
+      const { phoneNumber } = req.body;
+
+      let registeredUser;
+
+      registeredUser = await User.findOne({
+        phoneNumber,
+      });
+
+      if (registeredUser) {
+        await mapTempUserToSavedOne(currentUserId, registeredUser);
+        registeredUser.isLoggedIn = true;
+        await registeredUser.save();
+      } else {
+        registeredUser = await User.findByIdAndUpdate(
+          currentUserId,
+          { phoneNumber, isLoggedIn: true },
+          { new: true }
+        );
+      }
+
+      if (!registeredUser) {
+        throw new Error(
+          "Server error. Something went wrong while trying to log you in."
+        );
+      }
+
+      const token = fastify.jwt.sign({ ...registeredUser.getProps() });
+
+      rep.send({ ...registeredUser.getProps(), token });
+    },
+  });
+};
+
+export default login;

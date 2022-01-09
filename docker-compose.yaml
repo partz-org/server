@@ -1,0 +1,24 @@
+version: "3.8"
+
+services:
+  redis:
+    container_name: redis-wej
+    image: "redis:alpine"
+    hostname: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+  # mongo:
+  #   container_name: mongo-wej
+  #   image: mongo
+  #   restart: unless-stopped
+  #   env_file: .env
+  #   ports:
+  #     - 27017:27017
+  #   volumes:
+  #     - mongodb-dev:/data/db
+
+volumes:
+  # mongodb-dev:
+  redis-data:
