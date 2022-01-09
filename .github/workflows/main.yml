@@ -17,7 +17,7 @@ jobs:
           script: |
             export NVM_DIR=~/.nvm
             source ~/.nvm/nvm.sh
-            cd wej-server/ &&
+            cd server/ &&
             git pull &&
             yarn &&
             pm2 kill &&
