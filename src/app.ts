@@ -2,7 +2,7 @@ import { join } from "path";
 import { FastifyPluginAsync } from "fastify";
 import AutoLoad, { AutoloadPluginOptions } from "fastify-autoload";
 import * as mongoose from "mongoose";
-import { decorateFastify } from "./helpers/mutateFastify";
+import { addCachingHooks, decorateFastify } from "./helpers/mutateFastify";
 
 // import { resetMongoose } from "./helpers/resetMongoose";
 
@@ -22,6 +22,7 @@ const app: FastifyPluginAsync<AppOptions> = async (
   }
 
   decorateFastify(fastify);
+  addCachingHooks(fastify);
 
   // await resetMongoose(mongoose);
 
