@@ -19,7 +19,7 @@ export const addCachingHooks = (fastify: FastifyInstance) => {
       rep: FastifyReply
     ) {
       if (req.method === "GET" && !!req.params.id) {
-        const result = await fastify.redis.get(req.params.id);
+        const result = await fastify.redis?.get(req.params.id);
 
         if (result) return rep.status(202).send(JSON.parse(result));
       }
@@ -39,7 +39,7 @@ export const addCachingHooks = (fastify: FastifyInstance) => {
       if (isMutatingData) {
         const object = JSON.parse(payload);
         if (object.id) {
-          fastify.redis.set(object.id, payload);
+          fastify.redis?.set(object.id, payload);
         }
       }
 
@@ -54,8 +54,7 @@ export const addCachingHooks = (fastify: FastifyInstance) => {
       done: HookHandlerDoneFunction
     ) {
       if (req.method === "DELETE" && !!req.params.id) {
-        fastify.redis.del(req.params.id);
-        console.info("I got removed from cache!");
+        fastify.redis?.del(req.params.id);
       }
       done();
     }
