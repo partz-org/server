@@ -2,7 +2,8 @@ version: "3.8"
 
 services:
   redis:
-    container_name: redis-wej
+    container_name: redis-partz
+    restart: always
     image: "redis:alpine"
     hostname: redis
     ports:
@@ -10,7 +11,7 @@ services:
     volumes:
       - redis-data:/data
   # mongo:
-  #   container_name: mongo-wej
+  #   container_name: mongo-partz
   #   image: mongo
   #   restart: unless-stopped
   #   env_file: .env

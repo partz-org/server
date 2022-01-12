@@ -9,6 +9,5 @@ declare module "fastify" {
   }
   interface FastifyRequest {
     user: UserDoc;
-    isCached: boolean;
   }
 }
