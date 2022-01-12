@@ -12,8 +12,6 @@ export default fp(async (fastify) => {
     `echo "$( docker container inspect -f '{{.State.Running}}' "redis-partz")"`
   );
 
-  console.log(`stdout`, stdout);
-
   if (stdout.includes("true")) {
     console.log("coucou");
     fastify.register<FastifyRedisPluginOptions>(fastifyRedis, {
