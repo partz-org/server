@@ -13,7 +13,10 @@ import {
   UpdateExpense,
   UpdateExpenseBodyJson,
 } from "./validator";
-import { sendExpoMessage, getTokens } from "../../utils/notifications";
+import {
+  sendExpoMessage,
+  getTokensExceptOwner,
+} from "../../utils/notifications";
 
 export const getAllExpenses: RouteHandlerMethod = async function (req, rep) {
   const allExpenses = await Expense.find({});
@@ -71,9 +74,12 @@ export const createExpense: CreateExpense = {
     await countToUpdate.save();
 
     await sendExpoMessage({
-      to: getTokens(countToUpdate.participants, newExpense.mutatedBy),
-      body: `An expense of ${newExpense.amount}€ was made by ${newExpense.mutatedBy} for ${newExpense.title}`,
-      title: `A new expense has been created by ${newExpense.mutatedBy}`,
+      to: getTokensExceptOwner(
+        countToUpdate.participants,
+        newExpense.mutatedBy
+      ),
+      title: `New expense created!`,
+      body: `An expense of ${newExpense.amount}€ was made by ${newExpense.mutatedBy} for ${newExpense.title} and added to ${countToUpdate.title}`,
     });
 
     rep.status(201).send(newExpense);
@@ -118,9 +124,12 @@ export const updateExpense: UpdateExpense = {
     }
 
     await sendExpoMessage({
-      to: getTokens(countToUpdate.participants, expenseToUpdate.mutatedBy),
-      body: `An expense of ${expenseToUpdate.amount}€ was made by ${expenseToUpdate.mutatedBy} for ${expenseToUpdate.title}`,
-      title: `A new expense has been created by ${expenseToUpdate.mutatedBy}`,
+      to: getTokensExceptOwner(
+        countToUpdate.participants,
+        expenseToUpdate.mutatedBy
+      ),
+      title: `Expense udpated!`,
+      body: `An expense of ${expenseToUpdate.amount}€ was updated by ${expenseToUpdate.mutatedBy} for ${expenseToUpdate.title} in ${countToUpdate.title}`,
     });
 
     rep.send(expenseToUpdate);

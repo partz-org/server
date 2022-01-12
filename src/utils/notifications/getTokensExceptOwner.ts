@@ -1,6 +1,9 @@
 import { ParticipantDoc } from "../../schemas/participant";
 
-export const getTokens = (participants: ParticipantDoc[], owner: string) => {
+export const getTokensExceptOwner = (
+  participants: ParticipantDoc[],
+  owner: string
+) => {
   const tokens = participants
     .map((p) => {
       if (p.name === owner) return;

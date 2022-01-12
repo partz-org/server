@@ -1,2 +1,2 @@
-export * from "./getTokens";
+export * from "./getTokensExceptOwner";
 export * from "./sendExpoMessage";

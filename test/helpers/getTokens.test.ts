@@ -1,4 +1,4 @@
-import { getTokens } from "../../src/utils/notifications";
+import { getTokensExceptOwner } from "../../src/utils/notifications";
 import { ParticipantDoc } from "../../src/schemas/participant";
 
 const mockParticipants = [
@@ -53,7 +53,7 @@ const mockParticipants = [
 
 describe("Should properly return user tokens", () => {
   test("should properly reset the participants", () => {
-    const tokens = getTokens(
+    const tokens = getTokensExceptOwner(
       mockParticipants as unknown as ParticipantDoc[],
       "owner"
     );

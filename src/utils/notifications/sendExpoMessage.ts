@@ -2,9 +2,9 @@ import fetch from "cross-fetch";
 
 type ExpoNotification = {
   to: string[];
-  badge?: number;
   body: string;
   title: string;
+  badge?: number;
   sound?: string;
 };
 
