@@ -13,7 +13,6 @@ export default fp(async (fastify) => {
   );
 
   if (stdout.includes("true")) {
-    console.log("coucou");
     fastify.register<FastifyRedisPluginOptions>(fastifyRedis, {
       host: "127.0.0.1",
     });
