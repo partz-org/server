@@ -110,12 +110,12 @@ export const deleteParticipant: DeleteParticipant = {
     );
 
     if (isTaggedInExpense) {
-      throw new Error("Please remove this user from all expenses before.");
+      throw new Error("Please remove this user from all expenses before deleting him.");
     }
 
     participantToDelete.delete();
     rep.send({
-      message: `The participant ${participantToDelete.name} was deleted.`,
+      message: `Success! The participant ${participantToDelete.name} was deleted from the count`,
     });
   },
 };

@@ -18,7 +18,7 @@ import {
   getTokensExceptOwner,
 } from "../../utils/notifications";
 
-export const getAllExpenses: RouteHandlerMethod = async function (req, rep) {
+export const getAllExpenses: RouteHandlerMethod = async function (_req, rep) {
   const allExpenses = await Expense.find({});
   rep.status(200).send(allExpenses);
 };

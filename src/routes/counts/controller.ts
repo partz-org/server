@@ -1,14 +1,13 @@
+import { RouteShorthandOptionsWithHandler } from "fastify";
 import { Count, CountDoc } from "../../schemas/count";
 import { Expense } from "../../schemas/expense";
 import { Participant } from "../../schemas/participant";
-import { User, UserDoc } from "../../schemas/user";
+import { User } from "../../schemas/user";
 import {
   CountIdParamsJson,
   CreateCount,
   CreateCountBodyJson,
   DeleteCount,
-  GetAllCountQueryJson,
-  GetAllCounts,
   GetOneCount,
   GetOneCountParamsJson,
   UpdateCount,
@@ -16,42 +15,34 @@ import {
 } from "./validator";
 import { addNewParticipants } from "./helper";
 
-export const getAllCounts: GetAllCounts = {
+export const getAllCounts: RouteShorthandOptionsWithHandler = {
   schema: {
     tags: ["counts"],
-    querystring: GetAllCountQueryJson,
   },
   handler: async function (req, rep) {
-    const { user } = req;
+    const allCounts = await Count.find({}).populate([
+      "expenses",
+      "participants",
+    ]);
 
-    //TODO : add req user role auth
-    if (req.query.all) {
-      const allCounts = await Count.find({}).populate([
-        "expenses",
-        "participants",
-      ]);
-      rep.status(200).send(allCounts);
-      return;
-    }
-
-    if (req.query.userId) {
-      const userCounts = await Count.find({
-        creatorId: req.query.userId as unknown as UserDoc,
-      }).populate(["expenses", "participants"]);
-
-      rep.status(200).send(userCounts);
-      return;
-    }
-
-    if (!user) {
-      throw new Error("You are not authorized");
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const allCounts = await Count.find({ creatorId: user.id as any }).populate(
-      "expenses"
-    );
     rep.status(200).send(allCounts);
+  },
+};
+
+export const getMyCounts: RouteShorthandOptionsWithHandler = {
+  schema: {
+    tags: ["counts"],
+  },
+  handler: async function (req, rep) {
+    const {
+      user: { id: userId },
+    } = req;
+
+    const userCounts = await Count.find({
+      creatorId: userId,
+    }).populate(["expenses", "participants"]);
+
+    rep.status(200).send(userCounts);
   },
 };
 
@@ -79,7 +70,9 @@ export const createCount: CreateCount = {
     body: CreateCountBodyJson,
   },
   handler: async function (req, rep) {
-    const { user } = req;
+    const {
+      user: { id: userId },
+    } = req;
 
     const newCountProps = req.body;
 
@@ -87,7 +80,7 @@ export const createCount: CreateCount = {
 
     const newCount = await new Count({
       ...newCountProps,
-      creatorId: user.id,
+      creatorId: userId,
       participants: newParticipants.map((p) => p.id),
     }).populate(["expenses", "participants"]);
 
@@ -95,12 +88,12 @@ export const createCount: CreateCount = {
       p.count = newCount.id;
       // Tag user to participant
       if (p.name === req.body.userToTag) {
-        p.user = user.id;
+        p.user = userId;
       }
       await p.save();
     });
 
-    const userToUpdate = await User.findById(user.id);
+    const userToUpdate = await User.findById(userId);
 
     if (userToUpdate) {
       userToUpdate.counts = userToUpdate.counts.concat(newCount.id);

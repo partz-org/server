@@ -8,7 +8,6 @@ export interface UserProps {
   phoneNumber?: string;
   expoToken: string;
   role: "guest" | "user" | "premium" | "admin";
-  isLoggedIn: boolean;
   counts: CountDoc[];
   createdAt: Date;
   updatedAt: Date;
@@ -59,7 +58,6 @@ const UserSchema = new mongoose.Schema<UserDoc, UserModel>(
       enum: ["guest", "user", "premium", "admin"],
       default: "guest",
     },
-    isLoggedIn: Boolean,
     counts: [
       {
         type: mongoose.Schema.Types.ObjectId,

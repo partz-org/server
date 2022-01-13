@@ -154,7 +154,7 @@ describe.skip("Should properly udpate a newly created participant", () => {
   });
 });
 
-describe.skip("Should properly delete a newly created participant", () => {
+describe("Should properly delete a participant", () => {
   test("should delete an participant", async () => {
     const createdCount = await Count.create(newCount);
     const createdParticipant = await Participant.create({
@@ -168,7 +168,7 @@ describe.skip("Should properly delete a newly created participant", () => {
     });
 
     expect(result.payload).toEqual(
-      "The participant made by alex with amount of  1500 was deleted."
+      '{"message":"Success! The participant andré was deleted from the count"}'
     );
   });
 });
