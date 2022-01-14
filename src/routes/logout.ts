@@ -12,23 +12,21 @@ const loggout: FastifyPluginAsync = async (fastify): Promise<void> => {
         user: { id: currentUserId },
       } = req;
 
-      const userdToLoggout = await User.findByIdAndUpdate(
-        currentUserId,
-        {
-          isLoggedIn: false,
-        },
-        { new: true }
-      );
+      const userdToLoggout = await User.findById(currentUserId);
 
       if (!userdToLoggout) {
         throw new Error(
-          "Server error. Something went wrong while trying to log you in."
+          "Couldn't log you out. Try clearing out the app's cache."
         );
       }
 
-      const token = fastify.jwt.sign({ ...userdToLoggout.getProps() });
+      const newTempUser = await User.create({
+        expoToken: userdToLoggout.expoToken,
+      });
 
-      rep.send({ ...userdToLoggout.getProps(), token });
+      const token = fastify.jwt.sign({ ...newTempUser.getProps() });
+
+      rep.send({ ...newTempUser.getProps(), token });
     },
   });
 };

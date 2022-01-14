@@ -35,12 +35,11 @@ const login: FastifyPluginAsync = async (fastify): Promise<void> => {
 
       if (registeredUser) {
         await mapTempUserToSavedOne(currentUserId, registeredUser);
-        registeredUser.isLoggedIn = true;
         await registeredUser.save();
       } else {
         registeredUser = await User.findByIdAndUpdate(
           currentUserId,
-          { phoneNumber, isLoggedIn: true },
+          { phoneNumber },
           { new: true }
         );
       }

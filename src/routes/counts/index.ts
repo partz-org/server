@@ -3,6 +3,7 @@ import {
   createCount,
   deleteCount,
   getAllCounts,
+  getMyCounts,
   getOneCount,
   updateCount,
 } from "./controller";
@@ -10,6 +11,10 @@ import {
 const counts: FastifyPluginAsync = async (fastify): Promise<void> => {
   fastify.get("/", {
     ...getAllCounts,
+    preValidation: [fastify.getUserInfoIfLogged],
+  });
+  fastify.get("/me", {
+    ...getMyCounts,
     preValidation: [fastify.getUserInfoIfLogged],
   });
   fastify.get("/:id", getOneCount);

@@ -7,28 +7,6 @@ import {
 } from "fastify";
 import { RouteGenericInterface } from "fastify/types/route";
 
-// GET ALL COUNT TYPES ------------------------------
-export const GetAllCountQueryJson = Type.Object(
-  {
-    all: Type.Optional(Type.Boolean()),
-    userId: Type.Optional(Type.String()),
-  },
-  { additionalProperties: false }
-);
-
-export type GetAllCountQuery = Static<typeof GetAllCountQueryJson>;
-
-interface GetAllRequest extends RouteGenericInterface {
-  Querystring: GetAllCountQuery;
-}
-
-export type GetAllCounts = RouteShorthandOptionsWithHandler<
-  RawServerDefault,
-  RawRequestDefaultExpression<RawServerDefault>,
-  RawReplyDefaultExpression<RawServerDefault>,
-  GetAllRequest
->;
-
 // GET ONE COUNT TYPES ------------------------------
 export const GetOneCountParamsJson = Type.Object(
   {
@@ -61,7 +39,6 @@ export const CreateCountBodyJson = Type.Object(
         name: Type.String(),
       })
     ),
-    creatorId: Type.Optional(Type.String()),
     userToTag: Type.String(),
   },
   { additionalProperties: false }
