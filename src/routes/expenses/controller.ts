@@ -1,22 +1,19 @@
-import { RouteHandlerMethod } from "fastify/types/route";
-import { Expense } from "../../schemas/expense";
+
+import { RouteHandlerMethod } from "fastify";
+import { hasAllParticipantsInCount, recomputeCountData } from "../../helpers";
 import { Count } from "../../schemas/count";
-import { recomputeCountData } from "../../helpers/recomputeCountData";
-import { hasAllParticipantsInCount } from "../../helpers/hasAllParticipantsInCount";
+import { Expense } from "../../schemas/expense";
+import { sendExpoMessage, getTokensExceptOwner } from "../../utils/notifications";
 import {
-  CreateExpense,
-  CreateExpenseBodyJson,
-  DeleteExpense,
-  ExpenseIdParamsJson,
   GetOneExpense,
   GetOneExpenseParamsJson,
+  CreateExpense,
+  CreateExpenseBodyJson,
   UpdateExpense,
   UpdateExpenseBodyJson,
+  ExpenseIdParamsJson,
+  DeleteExpense,
 } from "./validator";
-import {
-  sendExpoMessage,
-  getTokensExceptOwner,
-} from "../../utils/notifications";
 
 export const getAllExpenses: RouteHandlerMethod = async function (_req, rep) {
   const allExpenses = await Expense.find({});

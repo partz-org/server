@@ -4,5 +4,6 @@
     "outDir": "dist",
     "noUnusedLocals": false
   },
-  "include": ["src/**/*.ts"]
+
+  "include": ["./src/**/*.ts"]
 }

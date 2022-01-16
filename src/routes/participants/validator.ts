@@ -1,9 +1,9 @@
 import { Type, Static } from "@sinclair/typebox";
 import {
-  RawReplyDefaultExpression,
-  RawRequestDefaultExpression,
-  RawServerDefault,
   RouteShorthandOptionsWithHandler,
+  RawServerDefault,
+  RawRequestDefaultExpression,
+  RawReplyDefaultExpression,
 } from "fastify";
 import { RouteGenericInterface } from "fastify/types/route";
 

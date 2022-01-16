@@ -1,8 +1,8 @@
 import { FastifyPluginAsync } from "fastify";
 import { RouteGenericInterface } from "fastify/types/route";
 import { Static, Type } from "@sinclair/typebox";
-import { User } from "../schemas/user";
 import { mapTempUserToSavedOne } from "../helpers/mapTempUserToSavedOne";
+import { User } from "../schemas/user";
 
 const LoginBodyJson = Type.Object({
   phoneNumber: Type.String(),

@@ -16,6 +16,6 @@ export const addNewParticipants = async (
       name: newParticipant,
       count: countToUpdate.id,
     });
-    countToUpdate.participants.push(createdParticipant.id);
+    countToUpdate.participants.push(createdParticipant);
   }
 };

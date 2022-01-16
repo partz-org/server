@@ -3,23 +3,23 @@ import { Count, CountDoc } from "../../schemas/count";
 import { Expense } from "../../schemas/expense";
 import { Participant } from "../../schemas/participant";
 import { User } from "../../schemas/user";
+import { addNewParticipants } from "./helper";
 import {
-  CountIdParamsJson,
-  CreateCount,
-  CreateCountBodyJson,
-  DeleteCount,
   GetOneCount,
   GetOneCountParamsJson,
+  CreateCount,
+  CreateCountBodyJson,
   UpdateCount,
+  CountIdParamsJson,
   UpdateCountBodyJson,
+  DeleteCount,
 } from "./validator";
-import { addNewParticipants } from "./helper";
 
 export const getAllCounts: RouteShorthandOptionsWithHandler = {
   schema: {
     tags: ["counts"],
   },
-  handler: async function (req, rep) {
+  handler: async function (_req, rep) {
     const allCounts = await Count.find({}).populate([
       "expenses",
       "participants",

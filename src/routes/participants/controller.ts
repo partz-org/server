@@ -1,6 +1,5 @@
 import { RouteHandlerMethod } from "fastify/types/route";
 import { Count } from "../../schemas/count";
-
 import { Participant } from "../../schemas/participant";
 import { UserDoc } from "../../schemas/user";
 import { linkUserToParticipantAndCount } from "./helper";
@@ -11,8 +10,8 @@ import {
   CreateParticipantBodyJson,
   UpdateParticipant,
   ParticipantIdParamsJson,
-  DeleteParticipant,
   UpdateParticipantBodyJson,
+  DeleteParticipant,
 } from "./validator";
 
 export const getAllParticipants: RouteHandlerMethod = async function (
@@ -110,7 +109,9 @@ export const deleteParticipant: DeleteParticipant = {
     );
 
     if (isTaggedInExpense) {
-      throw new Error("Please remove this user from all expenses before deleting him.");
+      throw new Error(
+        "Please remove this user from all expenses before deleting him."
+      );
     }
 
     participantToDelete.delete();
