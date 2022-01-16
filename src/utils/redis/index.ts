@@ -2,6 +2,7 @@ import { createClient, RedisClientType } from "redis";
 import { exec } from "child_process";
 import { promisify } from "util";
 import { Document } from "mongoose";
+import { FastifyInstance } from "fastify";
 
 const execAwait = promisify(exec);
 
@@ -9,7 +10,7 @@ const CHECK_IF_REDIS_CONTAINER_IS_RUNNING = `echo "$( docker container inspect -
 
 let redis: RedisClientType<any, any>;
 
-export const createRedisClient = async () => {
+export const createRedisClient = async (fastify?: FastifyInstance) => {
   if (redis) {
     return redis;
   }
@@ -18,6 +19,11 @@ export const createRedisClient = async () => {
 
   if (stdout.includes("true")) {
     redis = createClient();
+
+    if (fastify) {
+      redis.on("ready", () => fastify.log.info("Connected to Redis!"));
+    }
+
     await redis.connect();
 
     return redis;

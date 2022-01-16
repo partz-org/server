@@ -3,6 +3,7 @@ import { FastifyPluginAsync } from "fastify";
 import AutoLoad, { AutoloadPluginOptions } from "fastify-autoload";
 import * as mongoose from "mongoose";
 import { addCachingHooks, decorateFastify } from "./helpers/mutateFastify";
+import { createRedisClient } from "./utils/redis";
 
 // import { resetMongoose } from "./helpers/resetMongoose";
 
@@ -20,6 +21,8 @@ const app: FastifyPluginAsync<AppOptions> = async (
     await mongoose.connect(mongoUri!);
     fastify.log.info("Connected to MongoDB");
   }
+
+  await createRedisClient(fastify);
 
   decorateFastify(fastify);
   addCachingHooks(fastify);
