@@ -1,4 +1,5 @@
 import * as mongoose from "mongoose";
+import { MONGOOSE_METHODS, saveToRedis } from "../utils/redis";
 import { CountDoc } from "./count";
 import { UserDoc } from "./user";
 
@@ -84,5 +85,7 @@ const Participant = mongoose.model<ParticipantDoc, ParticipantModel>(
   "Participant",
   ParticipantSchema
 );
+
+ParticipantSchema.post(MONGOOSE_METHODS as any, saveToRedis);
 
 export { Participant };

@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import * as mongoose from "mongoose";
+import { MONGOOSE_METHODS, saveToRedis } from "../utils/redis";
 import { CountDoc } from "./count";
 
 export interface UserProps {
@@ -85,6 +86,8 @@ UserSchema.methods.getProps = function () {
 
   return user;
 };
+
+UserSchema.post(MONGOOSE_METHODS as any, saveToRedis);
 
 const User = mongoose.model<UserDoc, UserModel>("User", UserSchema);
 

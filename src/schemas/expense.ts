@@ -1,4 +1,5 @@
 import * as mongoose from "mongoose";
+import { MONGOOSE_METHODS, saveToRedis } from "../utils/redis";
 import { CountDoc } from "./count";
 
 interface CustomParticipant {
@@ -103,6 +104,8 @@ const ExpenseSchema = new mongoose.Schema<ExpenseDoc, ExpenseModel>(
     timestamps: true,
   }
 );
+
+ExpenseSchema.post(MONGOOSE_METHODS as any, saveToRedis);
 
 const Expense = mongoose.model<ExpenseDoc, ExpenseModel>(
   "Expense",

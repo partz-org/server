@@ -1,4 +1,5 @@
 import * as mongoose from "mongoose";
+import { MONGOOSE_METHODS, saveToRedis } from "../utils/redis";
 import { ExpenseDoc } from "./expense";
 import { ParticipantDoc } from "./participant";
 import { UserDoc } from "./user";
@@ -74,6 +75,8 @@ const CountSchema = new mongoose.Schema<CountDoc, CountModel>(
     timestamps: true,
   }
 );
+
+CountSchema.post(MONGOOSE_METHODS as any, saveToRedis);
 
 const Count = mongoose.model<CountDoc, CountModel>("Count", CountSchema);
 
