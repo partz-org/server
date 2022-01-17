@@ -115,6 +115,12 @@ export const deleteParticipant: DeleteParticipant = {
     }
 
     participantToDelete.delete();
+
+    // Remove participant from the count
+    await Count.findByIdAndUpdate(participantToDelete.count, {
+      $pull: { participants: participantToDelete.id },
+    }).populate(["expenses", "participants"]);
+
     rep.send({
       message: `Success! The participant ${participantToDelete.name} was deleted from the count`,
     });
