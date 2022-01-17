@@ -9,10 +9,7 @@ import {
 } from "./controller";
 
 const counts: FastifyPluginAsync = async (fastify): Promise<void> => {
-  fastify.get("/", {
-    ...getAllCounts,
-    preValidation: [fastify.getUserInfoIfLogged],
-  });
+  fastify.get("/", getAllCounts);
   fastify.get("/me", {
     ...getMyCounts,
     preValidation: [fastify.getUserInfoIfLogged],

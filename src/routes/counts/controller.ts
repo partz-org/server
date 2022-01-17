@@ -38,9 +38,15 @@ export const getMyCounts: RouteShorthandOptionsWithHandler = {
       user: { id: userId },
     } = req;
 
-    const userCounts = await Count.find({
-      creatorId: userId,
-    }).populate(["expenses", "participants"]);
+    // recover each participant to which the user is tagged.
+    const userParticipants = await Participant.find({ user: userId }).populate({
+      path: "count",
+      populate: ["expenses", "participants"],
+    });
+
+    // get each of their count to have "all the counts of the user in which he is participating"
+    // This is because we don't only need to fetch the counts created by the user but the ones he joined too
+    const userCounts = userParticipants.map((p) => p.count);
 
     rep.status(200).send(userCounts);
   },
@@ -84,14 +90,14 @@ export const createCount: CreateCount = {
       participants: newParticipants.map((p) => p.id),
     }).populate(["expenses", "participants"]);
 
-    newParticipants.forEach(async (p) => {
+    for await (const p of newParticipants) {
       p.count = newCount.id;
       // Tag user to participant
       if (p.name === req.body.userToTag) {
         p.user = userId;
       }
-      await p.save();
-    });
+      p.save();
+    }
 
     const userToUpdate = await User.findById(userId);
 
@@ -130,7 +136,7 @@ export const updateCount: UpdateCount = {
       await addNewParticipants(countToUpdate, req.body.participantsToAdd);
     }
 
-    countToUpdate.save();
+    await countToUpdate.save();
 
     rep.send(countToUpdate);
   },

@@ -6,23 +6,28 @@ export const linkUserToParticipantAndCount = async (
   userId: UserDoc
 ) => {
   const userToUpdate = await User.findById(userId).populate("counts");
+
   if (!userToUpdate) {
     throw new Error("Error while tagging your to count.");
   }
+
   const countOfParticipant = participant.count;
 
-  countOfParticipant?.participants.forEach((p) => {
+  // If User was already tagged to a participant of this count, remove him.
+  for await (const p of countOfParticipant.participants) {
     if (p.user?.toString() === userToUpdate.id) {
       p.user = undefined;
       p.save();
     }
-  });
+  }
 
   participant.user = userId;
 
-  userToUpdate?.counts.push(participant.count);
+  userToUpdate.counts.push(participant.count);
 
-  userToUpdate.save();
+  await countOfParticipant.save();
 
-  participant.save();
+  await userToUpdate.save();
+
+  await participant.save();
 };
