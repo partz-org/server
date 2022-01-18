@@ -1,7 +1,28 @@
 import { Count } from "../../../src/schemas/count";
 import { Participant } from "../../../src/schemas/participant";
+import { createUserWithToken } from "../../helpers";
 import { countBody, newCount, newParticipant } from "../../mocks";
 import { app } from "../../setup";
+
+let userToken: string;
+let userId: string;
+beforeAll(async () => {
+  const { token, id } = await createUserWithToken();
+  userToken = token;
+  userId = id;
+});
+
+const postCount = async (payload: any) =>
+  (
+    await app.inject({
+      method: "POST",
+      url: "/counts",
+      headers: {
+        authorization: `Bearer ${userToken}`,
+      },
+      payload: payload,
+    })
+  ).json();
 
 describe("Should properly create participants", () => {
   test("should create a participant", async () => {
@@ -30,24 +51,22 @@ describe("Should properly create participants", () => {
   });
 
   test("creating an participant updates the count doc.", async () => {
-    const createdCount = await app.inject({
-      method: "POST",
-      url: "/counts",
-      payload: countBody,
-    });
+    const createdCount = await postCount(countBody);
 
-    const result = await app.inject({
-      method: "POST",
-      url: "/participants",
-      payload: {
-        ...newParticipant,
-        count: createdCount.json().id,
-      },
-    });
+    const result = (
+      await app.inject({
+        method: "POST",
+        url: "/participants",
+        payload: {
+          ...newParticipant,
+          count: createdCount.id,
+        },
+      })
+    ).json();
 
-    const updatedCount = await Count.findById(createdCount.json().id);
+    const updatedCount = await Count.findById(createdCount.id);
 
-    expect(updatedCount?.participants.toString()).toContain(result.json().id);
+    expect(updatedCount?.participants.toString()).toContain(result.id);
   });
 });
 
@@ -89,68 +108,27 @@ describe("Should properly get participants", () => {
   });
 });
 
-describe.skip("Should properly udpate a newly created participant", () => {
-  test("should update an participant", async () => {
+describe("Should properly udpate a newly created participant", () => {
+  test("should tag a user to a participant", async () => {
     const createdCount = await Count.create(newCount);
+
     const createdParticipant = await Participant.create({
       ...newParticipant,
       count: createdCount.id,
     });
 
-    const result = await app.inject({
-      method: "PUT",
-      url: `/participants/${createdParticipant.id}`,
-      payload: {
-        title: "New title!",
-      },
-    });
+    const result = (
+      await app.inject({
+        method: "PUT",
+        url: `/participants/${createdParticipant.id}`,
+        headers: {
+          authorization: `Bearer ${userToken}`,
+        },
+      })
+    ).json();
 
-    expect(result.payload).toContain("New title!");
-  });
-
-  test("should update the count data if an participant is edited.", async () => {
-    const createdCount = await app.inject({
-      method: "POST",
-      url: "/counts",
-      payload: countBody,
-    });
-
-    await app.inject({
-      method: "POST",
-      url: "/participants",
-      payload: {
-        ...newParticipant,
-        count: createdCount.json().id,
-      },
-    });
-
-    await app.inject({
-      method: "POST",
-      url: "/participants",
-      payload: {
-        ...newParticipant,
-        title: "other",
-        count: createdCount.json().id,
-      },
-    });
-
-    const updatedCount = await Count.findById(createdCount.json().id);
-
-    expect(updatedCount?.total).toEqual(3000);
-
-    await app.inject({
-      method: "PUT",
-      url: `/participants/${updatedCount?.participants[0]}`,
-      payload: {
-        amount: 9750,
-      },
-    });
-
-    const countWithEditedParticipant = await Count.findById(
-      createdCount.json().id
-    );
-
-    expect(countWithEditedParticipant?.total).toEqual(11250);
+    expect(result.name).toEqual("andré");
+    expect(result.user).toEqual(userId);
   });
 });
 

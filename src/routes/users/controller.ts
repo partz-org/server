@@ -3,7 +3,6 @@ import { Static, Type } from "@sinclair/typebox";
 import { User } from "../../schemas/user";
 import {
   CreateTempUserBodyJson,
-  RegisterUserBodyJson,
   UpdateUserBodyJson,
   UserIdParamsJson,
 } from "./validator";
@@ -11,10 +10,8 @@ import type {
   CreateTempUser,
   DeleteUser,
   GetOneUser,
-  RegisterUser,
   UpdateUser,
 } from "./validator";
-import { encryptPassword } from "./helper";
 
 export const getAllUsers: RouteHandlerMethod = async function (req, rep) {
   const allUsers = await User.find({});
@@ -63,28 +60,6 @@ export const createTempUser: CreateTempUser = {
     const token = this.jwt.sign({ ...newUser.getProps() });
 
     rep.status(201).send({ ...newUser.getProps(), token });
-  },
-};
-
-export const register: RegisterUser = {
-  schema: {
-    body: RegisterUserBodyJson,
-    tags: ["user"],
-  },
-  handler: async function (req, rep) {
-    const passwordHash = await encryptPassword(req.body.password);
-
-    const tempUser = await User.findByIdAndUpdate(req.user.id, {
-      ...req.body,
-      passwordHash,
-    }).populate({
-      path: "counts",
-      populate: { path: "participants" },
-    });
-
-    const token = this.jwt.sign({ ...tempUser?.getProps() });
-
-    rep.status(201).send({ ...tempUser?.getProps(), token });
   },
 };
 

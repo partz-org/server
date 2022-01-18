@@ -50,9 +50,6 @@ export const newExpense = {
 };
 
 export const newUser: CreateTempUserBody = {
-  email: "firmin@gmail.com",
-  password: "lolo",
-  name: "Firmin",
   expoToken: "qzdqzd",
 };
 

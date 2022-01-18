@@ -55,30 +55,6 @@ export type CreateTempUser = RouteShorthandOptionsWithHandler<
   CreateTempUserRequest
 >;
 
-// REGISTER A USER TYPES ------------------------------
-export const RegisterUserBodyJson = Type.Object(
-  {
-    email: Type.String(),
-    password: Type.String(),
-    name: Type.Optional(Type.String()),
-    phoneNumber: Type.Optional(Type.String()),
-  },
-  { additionalProperties: false }
-);
-
-export type RegisterUserBody = Static<typeof RegisterUserBodyJson>;
-
-export interface RegisterUserRequest extends RouteGenericInterface {
-  Body: RegisterUserBody;
-}
-
-export type RegisterUser = RouteShorthandOptionsWithHandler<
-  RawServerDefault,
-  RawRequestDefaultExpression<RawServerDefault>,
-  RawReplyDefaultExpression<RawServerDefault>,
-  RegisterUserRequest
->;
-
 // UPDATE ONE USER TYPES ------------------------------
 export const UpdateUserBodyJson = Type.Object(
   {

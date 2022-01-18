@@ -11,7 +11,10 @@ const expenses: FastifyPluginAsync = async (fastify): Promise<void> => {
   fastify.get("/", getAllParticipants);
   fastify.get("/:id", getOneParticipant);
   fastify.post("/", createParticipant);
-  fastify.put("/:id", updateParticipant);
+  fastify.put("/:id", {
+    ...updateParticipant,
+    preValidation: [fastify.getUserInfoIfLogged],
+  });
   fastify.delete("/:id", deleteParticipant);
 };
 

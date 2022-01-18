@@ -1,17 +1,38 @@
 import { Count } from "../../../src/schemas/count";
 import { Expense } from "../../../src/schemas/expense";
+import { createUserWithToken } from "../../helpers";
 import { countBody, newCount, newExpense } from "../../mocks";
 import { app } from "../../setup";
 
+let userToken: string;
+beforeAll(async () => {
+  const { token } = await createUserWithToken();
+  userToken = token;
+});
+
+const postExpense = async (payload: any) =>
+  await app.inject({
+    method: "POST",
+    url: "/expenses",
+    headers: {
+      authorization: `Bearer ${userToken}`,
+    },
+    payload: payload,
+  });
+
+const putExpense = async (id: string, payload: any) =>
+  await app.inject({
+    method: "PUT",
+    url: `/expenses/${id}`,
+    headers: {
+      authorization: `Bearer ${userToken}`,
+    },
+    payload: payload,
+  });
+
 describe("Should properly create expenses", () => {
   test("should return an error if no valid count id is provided", async () => {
-    const result = await app.inject({
-      method: "POST",
-      url: "/expenses",
-      payload: {
-        ...newExpense,
-      },
-    });
+    const result = await postExpense(newExpense);
 
     expect(result.payload).toContain(
       "Cannot find a count associated with your expense."
@@ -22,22 +43,18 @@ describe("Should properly create expenses", () => {
   test("should return an error if a user is missing inside the count participants", async () => {
     const createdCount = await Count.create(newCount);
 
-    const result = await app.inject({
-      method: "POST",
-      url: "/expenses",
-      payload: {
-        ...newExpense,
-        owers: [
-          "eric",
-          "louise",
-          "andré",
-          "elisabeth",
-          "firmin",
-          "olivier",
-          "alex",
-        ],
-        count: createdCount.id,
-      },
+    const result = await postExpense({
+      ...newExpense,
+      owers: [
+        "eric",
+        "louise",
+        "andré",
+        "elisabeth",
+        "firmin",
+        "olivier",
+        "alex",
+      ],
+      count: createdCount.id,
     });
 
     expect(result.payload).toContain(
@@ -50,16 +67,15 @@ describe("Should properly create expenses", () => {
     const createdCount = await app.inject({
       method: "POST",
       url: "/counts",
+      headers: {
+        authorization: `Bearer ${userToken}`,
+      },
       payload: countBody,
     });
 
-    const result = await app.inject({
-      method: "POST",
-      url: "/expenses",
-      payload: {
-        ...newExpense,
-        count: createdCount.json().id,
-      },
+    const result = await postExpense({
+      ...newExpense,
+      count: createdCount.json().id,
     });
 
     expect(result.payload).toContain(newExpense.title);
@@ -69,14 +85,10 @@ describe("Should properly create expenses", () => {
   test("should not create an expense with negative amount", async () => {
     const createdCount = await Count.create(newCount);
 
-    const result = await app.inject({
-      method: "POST",
-      url: "/expenses",
-      payload: {
-        ...newExpense,
-        amount: -1500,
-        count: createdCount.id,
-      },
+    const result = await postExpense({
+      ...newExpense,
+      amount: -1500,
+      count: createdCount.id,
     });
 
     expect(result.payload).toContain("body.amount should be >= 0");
@@ -87,16 +99,15 @@ describe("Should properly create expenses", () => {
     const createdCount = await app.inject({
       method: "POST",
       url: "/counts",
+      headers: {
+        authorization: `Bearer ${userToken}`,
+      },
       payload: countBody,
     });
 
-    const result = await app.inject({
-      method: "POST",
-      url: "/expenses",
-      payload: {
-        ...newExpense,
-        count: createdCount.json().id,
-      },
+    const result = await postExpense({
+      ...newExpense,
+      count: createdCount.json().id,
     });
 
     const updatedCount = await Count.findById(createdCount.json().id);
@@ -153,56 +164,65 @@ describe("Should properly udpate a newly created expense", () => {
       count: createdCount.id,
     });
 
-    const result = await app.inject({
-      method: "PUT",
-      url: `/expenses/${createdExpense.id}`,
-      payload: {
-        title: "New title!",
-      },
+    putExpense;
+
+    const result = await putExpense(createdExpense.id, {
+      title: "New title!",
     });
 
     expect(result.payload).toContain("New title!");
   });
 
   test("should update the count data if an expense is edited.", async () => {
-    const createdCount = await app.inject({
-      method: "POST",
-      url: "/counts",
-      payload: countBody,
-    });
+    const createdCount = (
+      await app.inject({
+        method: "POST",
+        url: "/counts",
+        headers: {
+          authorization: `Bearer ${userToken}`,
+        },
+        payload: countBody,
+      })
+    ).json();
 
     await app.inject({
       method: "POST",
       url: "/expenses",
+      headers: {
+        authorization: `Bearer ${userToken}`,
+      },
       payload: {
         ...newExpense,
-        count: createdCount.json().id,
+        count: createdCount.id,
       },
     });
 
     await app.inject({
       method: "POST",
       url: "/expenses",
+      headers: {
+        authorization: `Bearer ${userToken}`,
+      },
       payload: {
         ...newExpense,
         title: "other",
-        count: createdCount.json().id,
+        count: createdCount.id,
       },
     });
 
-    const updatedCount = await Count.findById(createdCount.json().id);
+    const updatedCount = await Count.findById(createdCount.id).populate(
+      "expenses"
+    );
 
     expect(updatedCount?.total).toEqual(3000);
 
-    await app.inject({
-      method: "PUT",
-      url: `/expenses/${updatedCount?.expenses[0]}`,
-      payload: {
+    (
+      await putExpense(updatedCount?.expenses[0].id, {
         amount: 9750,
-      },
-    });
+      })
+    ).json();
 
-    const countWithEditedExpense = await Count.findById(createdCount.json().id);
+    const countWithEditedExpense = await Count.findById(createdCount.id);
 
     expect(countWithEditedExpense?.total).toEqual(11250);
   });

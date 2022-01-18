@@ -7,6 +7,9 @@ import { resetMongoose } from "../src/helpers/";
 
 let mongod: any;
 
+// Necessary to make jwt work
+process.env.SECRET_KEY = "qzdqzdqz";
+
 const app = Fastify();
 
 beforeAll(async () => {
@@ -18,11 +21,9 @@ beforeAll(async () => {
   await app.register(App);
 });
 
-beforeEach(async () => {
-  await resetMongoose(mongoose);
-});
-
 afterAll(async () => {
+  await resetMongoose(mongoose);
+
   await mongod.stop();
   await mongoose.connection.close();
   await app.close();

@@ -8,7 +8,7 @@ export const linkUserToParticipantAndCount = async (
   const userToUpdate = await User.findById(userId).populate("counts");
 
   if (!userToUpdate) {
-    throw new Error("Error while tagging your to count.");
+    throw new Error("Error while tagging you to count.");
   }
 
   const countOfParticipant = participant.count;

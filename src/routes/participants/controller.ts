@@ -1,7 +1,6 @@
 import { RouteHandlerMethod } from "fastify/types/route";
 import { Count } from "../../schemas/count";
 import { Participant } from "../../schemas/participant";
-import { UserDoc } from "../../schemas/user";
 import { linkUserToParticipantAndCount } from "./helper";
 import {
   GetOneParticipant,
@@ -10,7 +9,6 @@ import {
   CreateParticipantBodyJson,
   UpdateParticipant,
   ParticipantIdParamsJson,
-  UpdateParticipantBodyJson,
   DeleteParticipant,
 } from "./validator";
 
@@ -70,9 +68,12 @@ export const updateParticipant: UpdateParticipant = {
   schema: {
     tags: ["participants"],
     params: ParticipantIdParamsJson,
-    body: UpdateParticipantBodyJson,
   },
   handler: async function (req, rep) {
+    const {
+      user: { id: userId },
+    } = req;
+
     const participantToUpdate = await Participant.findById(
       req.params.id
     ).populate({ path: "count", populate: { path: "participants" } });
@@ -81,10 +82,7 @@ export const updateParticipant: UpdateParticipant = {
       throw new Error("Couldn't find the participant you selected.");
     }
 
-    await linkUserToParticipantAndCount(
-      participantToUpdate,
-      req.body.user as unknown as UserDoc
-    );
+    await linkUserToParticipantAndCount(participantToUpdate, userId);
 
     rep.send(participantToUpdate);
   },

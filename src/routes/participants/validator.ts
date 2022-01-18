@@ -68,18 +68,8 @@ export const ParticipantIdParamsJson = Type.Object(
 
 export type ParticipantIdParams = Static<typeof ParticipantIdParamsJson>;
 
-export const UpdateParticipantBodyJson = Type.Object(
-  {
-    user: Type.String(),
-  },
-  { additionalProperties: false }
-);
-
-export type UpdateParticipantBody = Static<typeof UpdateParticipantBodyJson>;
-
 export interface UpdateParticipantRequest extends RouteGenericInterface {
   Params: ParticipantIdParams;
-  Body: UpdateParticipantBody;
 }
 
 export type UpdateParticipant = RouteShorthandOptionsWithHandler<
