@@ -19,8 +19,8 @@ describe("Should properly handle count computation", () => {
     });
   });
 
-  test("should properly recompute the balance of a count", () => {
-    recomputeCountData(count);
+  test("should properly recompute the balance of a count", async () => {
+    await recomputeCountData(count);
 
     let totalCredit = 0;
     let totalDebit = 0;

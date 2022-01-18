@@ -7,9 +7,6 @@ import { resetMongoose } from "../src/helpers/";
 
 let mongod: any;
 
-// Automatically build and tear down our instance
-process.env.SECRET_KEY = "jemangedesfleurslmaoduculputaincestquoicesecret";
-
 const app = Fastify();
 
 beforeAll(async () => {

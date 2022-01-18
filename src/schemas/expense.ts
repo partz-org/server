@@ -9,7 +9,6 @@ interface CustomParticipant {
 export interface ExpenseProps {
   title: string;
   description: string;
-  mutatedBy: string;
   amount: number;
   currency: "EUR" | "USD" | "CAD";
   payers: string[];
@@ -32,7 +31,6 @@ const ExpenseSchema = new mongoose.Schema<ExpenseDoc, ExpenseModel>(
       required: true,
     },
     description: String,
-    mutatedBy: String,
     amount: {
       type: Number,
       validate: {

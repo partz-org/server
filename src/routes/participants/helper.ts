@@ -14,10 +14,10 @@ export const linkUserToParticipantAndCount = async (
   const countOfParticipant = participant.count;
 
   // If User was already tagged to a participant of this count, remove him.
-  for await (const p of countOfParticipant.participants) {
+  for (const p of countOfParticipant.participants) {
     if (p.user?.toString() === userToUpdate.id) {
       p.user = undefined;
-      p.save();
+      await p.save();
     }
   }
 

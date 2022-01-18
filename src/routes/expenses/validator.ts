@@ -35,7 +35,6 @@ export const CreateExpenseBodyJson = Type.Object(
     description: Type.Optional(Type.String()),
     currency: Type.Optional(Type.String()),
     amount: Type.Optional(Type.Number({ minimum: 0 })),
-    mutatedBy: Type.String(),
     customPayers: Type.Optional(
       Type.Array(
         Type.Object({
@@ -88,7 +87,6 @@ export const UpdateExpenseBodyJson = Type.Object(
     description: Type.Optional(Type.String()),
     currency: Type.Optional(Type.String()),
     amount: Type.Optional(Type.Number()),
-    mutatedBy: Type.Optional(Type.String()),
     customPayers: Type.Optional(
       Type.Array(
         Type.Object({

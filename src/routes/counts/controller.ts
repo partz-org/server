@@ -90,13 +90,13 @@ export const createCount: CreateCount = {
       participants: newParticipants.map((p) => p.id),
     }).populate(["expenses", "participants"]);
 
-    for await (const p of newParticipants) {
+    for (const p of newParticipants) {
       p.count = newCount.id;
       // Tag user to participant
       if (p.name === req.body.userToTag) {
         p.user = userId;
       }
-      p.save();
+      await p.save();
     }
 
     const userToUpdate = await User.findById(userId);
