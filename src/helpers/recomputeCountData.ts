@@ -19,8 +19,8 @@ export const recomputeCountData = async (count: CountDoc) => {
     updateParticipantsWithExpense(count.participants, expense);
   });
 
-  for await (const p of count.participants) {
-    p.save();
+  for  (const p of count.participants) {
+    await p.save();
   }
 
   count.total = count.expenses.reduce((acc, curr) => acc + curr.amount, 0);

@@ -1,9 +1,12 @@
-
 import { RouteHandlerMethod } from "fastify";
 import { hasAllParticipantsInCount, recomputeCountData } from "../../helpers";
 import { Count } from "../../schemas/count";
 import { Expense } from "../../schemas/expense";
-import { sendExpoMessage, getTokensExceptOwner } from "../../utils/notifications";
+import {
+  sendExpoMessage,
+  getTokensExceptOwner,
+} from "../../utils/notifications";
+import { findCurrentUserParticipant } from "./helper";
 import {
   GetOneExpense,
   GetOneExpenseParamsJson,
@@ -41,6 +44,10 @@ export const getOneExpense: GetOneExpense = {
 
 export const createExpense: CreateExpense = {
   handler: async function (req, rep) {
+    const {
+      user: { id: userId },
+    } = req;
+
     const newExpense = await new Expense(req.body).populate({
       path: "count",
       populate: { path: "participants" },
@@ -70,13 +77,15 @@ export const createExpense: CreateExpense = {
 
     await countToUpdate.save();
 
-    await sendExpoMessage({
-      to: getTokensExceptOwner(
-        countToUpdate.participants,
-        newExpense.mutatedBy
-      ),
+    const mutatedBy = findCurrentUserParticipant(
+      countToUpdate.participants,
+      userId
+    );
+
+    sendExpoMessage({
+      to: getTokensExceptOwner(countToUpdate.participants, mutatedBy),
       title: `New expense created!`,
-      body: `An expense of ${newExpense.amount}€ was made by ${newExpense.mutatedBy} for ${newExpense.title} and added to ${countToUpdate.title}`,
+      body: `An expense of ${newExpense.amount}€ was made by ${mutatedBy} for ${newExpense.title} and added to ${countToUpdate.title}`,
     });
 
     rep.status(201).send(newExpense);
@@ -89,6 +98,9 @@ export const createExpense: CreateExpense = {
 
 export const updateExpense: UpdateExpense = {
   handler: async function (req, rep) {
+    const {
+      user: { id: userId },
+    } = req;
     const expenseToUpdate = await Expense.findByIdAndUpdate(
       req.params.id,
       req.body as any,
@@ -120,13 +132,15 @@ export const updateExpense: UpdateExpense = {
       await countToUpdate.save();
     }
 
-    await sendExpoMessage({
-      to: getTokensExceptOwner(
-        countToUpdate.participants,
-        expenseToUpdate.mutatedBy
-      ),
+    const mutatedBy = findCurrentUserParticipant(
+      countToUpdate.participants,
+      userId
+    );
+
+    sendExpoMessage({
+      to: getTokensExceptOwner(countToUpdate.participants, mutatedBy),
       title: `Expense udpated!`,
-      body: `An expense of ${expenseToUpdate.amount}€ was updated by ${expenseToUpdate.mutatedBy} for ${expenseToUpdate.title} in ${countToUpdate.title}`,
+      body: `An expense of ${expenseToUpdate.amount}€ was updated by ${mutatedBy} for ${expenseToUpdate.title} in ${countToUpdate.title}`,
     });
 
     rep.send(expenseToUpdate);

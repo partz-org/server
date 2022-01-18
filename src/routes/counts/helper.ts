@@ -11,7 +11,7 @@ export const addNewParticipants = async (
       "One of the participants with the same name already exists in this count."
     );
   }
-  for await (const newParticipant of participantsToAdd) {
+  for (const newParticipant of participantsToAdd) {
     const createdParticipant = await Participant.create({
       name: newParticipant,
       count: countToUpdate.id,
