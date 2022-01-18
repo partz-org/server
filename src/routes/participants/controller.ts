@@ -81,7 +81,7 @@ export const updateParticipant: UpdateParticipant = {
       throw new Error("Couldn't find the participant you selected.");
     }
 
-    linkUserToParticipantAndCount(
+    await linkUserToParticipantAndCount(
       participantToUpdate,
       req.body.user as unknown as UserDoc
     );

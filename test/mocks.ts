@@ -46,7 +46,6 @@ export const newExpense = {
   owers: ["eric", "andré", "elisabeth", "firmin", "olivier"],
   customOwers: [],
   customPayers: [],
-  mutatedBy: "eric",
   count: "61111696845bf47b9ba6b467",
 };
 

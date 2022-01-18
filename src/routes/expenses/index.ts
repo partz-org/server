@@ -10,8 +10,14 @@ import {
 const expenses: FastifyPluginAsync = async (fastify): Promise<void> => {
   fastify.get("/", getAllExpenses);
   fastify.get("/:id", getOneExpense);
-  fastify.post("/", createExpense);
-  fastify.put("/:id", updateExpense);
+  fastify.post("/", {
+    ...createExpense,
+    preValidation: [fastify.getUserInfoIfLogged],
+  });
+  fastify.put("/:id", {
+    ...updateExpense,
+    preValidation: [fastify.getUserInfoIfLogged],
+  });
   fastify.delete("/:id", deleteExpense);
 };
 
